@@ -1,0 +1,50 @@
+version: '3'
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:9.6-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+
+  # development email server
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+      
+  keycloak:
+    image: "jboss/keycloak:4.1.0.Final"
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: keycloak_admin
+      KEYCLOAK_PASSWORD: easypassword
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    command: -b 0.0.0.0 -Dkeycloak.migration.dir=/tmp/keycloak -Dkeycloak.migration.action=import -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+    volume:
+      - ./docker:/tmp/keycloak
+
+  pgweb:
+    image: sosedoff/pgweb
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: 'postgres://keycloak:password@postgres:5432/keycloak?sslmode=disable'
