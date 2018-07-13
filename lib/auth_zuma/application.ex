@@ -8,8 +8,6 @@ defmodule AuthZuma.Application do
   @authenticate_path "AUTHENTICATE_PATH"
   @client_id "CLIENT_ID"
   @client_secret "CLIENT_SECRET"
-  @joken_jwks_url "JOKEN_JWKS_URL"
-  @joken_jwks_key_id "JOKEN_JWKS_KEY_ID"
 
   def start(_type, _args) do
     children = []
@@ -29,17 +27,9 @@ defmodule AuthZuma.Application do
       client_id = System.get_env(@client_id) || raise error_msg.(@client_id)
       client_secret = System.get_env(@client_secret) || raise error_msg.(@client_secret)
 
-      joken_jwks_url = System.get_env(@joken_jwks_url) || iam_uma_base_url
-
-      joken_jwks_key_id =
-        System.get_env(@joken_jwks_key_id) || raise error_msg.(@joken_jwks_key_id)
-
       Application.put_env(:auth_zuma, :iam_uma_base_url, iam_uma_base_url)
       Application.put_env(:auth_zuma, :client_id, client_id)
       Application.put_env(:auth_zuma, :client_secret, client_secret)
-
-      Application.put_env(:joken_jwks, :joken_jwks_url, joken_jwks_url)
-      Application.put_env(:joken_jwks, :joken_jwks_key_id, joken_jwks_key_id)
 
       # optional paths
       resource_set_path = System.get_env(@resource_set_path) || config[:resource_set_path]

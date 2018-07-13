@@ -22,7 +22,9 @@ defmodule AuthZuma.MixProject do
     [
       {:jason, "~> 1.1", override: true},
       {:tesla, "~> 1.0"},
-      {:joken_jwks, github: "victorolinasc/joken_jwks"}
+
+      # Docs
+      {:ex_doc, "~> 0.18", runtime: false, only: :dev}
     ]
   end
 end
